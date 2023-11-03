@@ -1,0 +1,14 @@
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/bin/Debug/net7.0/NamedPipeClient
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/bin/Debug/net7.0/NamedPipeClient.deps.json
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/bin/Debug/net7.0/NamedPipeClient.runtimeconfig.json
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/bin/Debug/net7.0/NamedPipeClient.dll
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/bin/Debug/net7.0/NamedPipeClient.pdb
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/NamedPipeClient.GeneratedMSBuildEditorConfig.editorconfig
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/NamedPipeClient.AssemblyInfoInputs.cache
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/NamedPipeClient.AssemblyInfo.cs
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/NamedPipeClient.csproj.CoreCompileInputs.cache
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/NamedPipeClient.dll
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/refint/NamedPipeClient.dll
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/NamedPipeClient.pdb
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/NamedPipeClient.genruntimeconfig.cache
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeClient/obj/Debug/net7.0/ref/NamedPipeClient.dll

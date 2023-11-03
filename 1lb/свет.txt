@@ -1,0 +1,290 @@
+1)#include <Arduino.h>
+
+const int LED_PIN = D0;
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(LED_PIN, HIGH);
+
+  delay(5000);
+  digitalWrite(LED_PIN, LOW);
+  delay(5000);
+}
+
+2)const int LED_PIN = D0;
+const int BUTTON_PIN = D1;
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+}
+
+void loop() {
+  if (digitalRead(BUTTON_PIN) == LOW) {
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+}
+
+
+3)const int LED_RED = D0;
+const int LED_YELLOW = D1;
+const int LED_GREEN = D2;
+
+
+const int BUTTON = D3;
+
+
+const unsigned long RED_TIME = 5000;      
+const unsigned long YELLOW_TIME = 2000;   
+const unsigned long GREEN_TIME = 5000;    
+
+void setup() {
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(BUTTON, INPUT_PULLUP);
+}
+
+void loop() {
+
+  while (digitalRead(BUTTON) == HIGH) {
+    delay(10);
+  }
+
+
+  digitalWrite(LED_RED, HIGH);
+  delay(RED_TIME);
+
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_YELLOW, HIGH);
+  delay(YELLOW_TIME);
+
+  digitalWrite(LED_YELLOW, LOW);
+  digitalWrite(LED_GREEN, HIGH);
+  delay(GREEN_TIME);
+
+  digitalWrite(LED_GREEN, LOW);
+}
+
+4)const int LED_RED = D0;
+const int LED_YELLOW = D1;
+const int LED_GREEN = D2;
+
+
+const int BUTTON = D3;
+
+
+const unsigned long RED_TIME = 5000;      
+const unsigned long YELLOW_TIME = 2000;   
+const unsigned long GREEN_TIME = 5000;    
+
+volatile bool buttonPressed = false;
+
+void buttonInterrupt() {
+  buttonPressed = true;
+}
+
+void setup() {
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  
+
+  pinMode(BUTTON, INPUT_PULLUP);
+  attachInterrupt(BUTTON, buttonInterrupt, FALLING);
+}
+
+void loop() {
+  if (buttonPressed) {
+
+    digitalWrite(LED_RED, HIGH);
+    delay(RED_TIME);
+
+
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_YELLOW, HIGH);
+    delay(YELLOW_TIME);
+
+
+    digitalWrite(LED_YELLOW, LOW);
+    digitalWrite(LED_GREEN, HIGH);
+    delay(GREEN_TIME);
+
+    digitalWrite(LED_GREEN, LOW);
+    buttonPressed = false;
+  }
+}
+
+5)const int LED_RED = D0;
+const int LED_YELLOW = D1;
+const int LED_GREEN = D2;
+
+const unsigned long RED_TIME = 5000;      
+const unsigned long YELLOW_TIME = 2000;   
+const unsigned long GREEN_TIME = 5000;    
+
+unsigned long lastChangeTime = 0;
+int currentState = 0;
+
+void setup() {
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+
+  digitalWrite(LED_RED, HIGH);
+  currentState = 0;
+  lastChangeTime = millis();
+}
+
+void loop() {
+  unsigned long currentTime = millis();
+
+
+  if (currentTime - lastChangeTime >= RED_TIME && currentState == 0) {
+    digitalWrite(LED_RED, LOW);
+    digitalWrite(LED_YELLOW, HIGH);
+    currentState = 1;
+    lastChangeTime = currentTime;
+  } else if (currentTime - lastChangeTime >= YELLOW_TIME && currentState == 1) {
+    digitalWrite(LED_YELLOW, LOW);
+    digitalWrite(LED_GREEN, HIGH);
+    currentState = 2;
+    lastChangeTime = currentTime;
+  } else if (currentTime - lastChangeTime >= GREEN_TIME && currentState == 2) {
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_RED, HIGH);
+    currentState = 0;
+    lastChangeTime = currentTime;
+  }
+
+}
+
+
+
+and 
+const int LED_RED = GP0;
+const int LED_YELLOW = GP1;
+const int LED_GREEN = GP2;
+
+const unsigned long RED_TIME = 5000;      
+const unsigned long YELLOW_TIME = 2000;   
+const unsigned long GREEN_TIME = 5000;    
+
+
+int currentState = 0;
+
+void timerInterrupt() {
+  switch (currentState) {
+    case 0:
+      digitalWrite(LED_RED, HIGH);
+      digitalWrite(LED_YELLOW, LOW);
+      digitalWrite(LED_GREEN, LOW);
+      delay(RED_TIME);
+      currentState = 1;
+      break;
+    case 1:
+      digitalWrite(LED_RED, LOW);
+      digitalWrite(LED_YELLOW, HIGH);
+      digitalWrite(LED_GREEN, LOW);
+      delay(YELLOW_TIME);
+      currentState = 2;
+      break;
+    case 2:
+      digitalWrite(LED_RED, LOW);
+      digitalWrite(LED_YELLOW, LOW);
+      digitalWrite(LED_GREEN, HIGH);
+      delay(GREEN_TIME);
+      currentState = 0;
+      break;
+  }
+}
+
+void setup() {
+
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_YELLOW, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+
+  attachInterrupt(TIMER_IRQ_WRAP, timerInterrupt);
+  hw_timer_set_interval(TIMER, TIMER_IRQ_WRAP, 1000000); 
+  hw_timer_set_reload(TIMER, true); 
+  hw_timer_start(TIMER);
+}
+
+void loop() {
+
+}
+
+and 
+const int LED_RED = GP0;
+const int LED_YELLOW = GP1;
+const int LED_GREEN = GP2;
+
+
+const unsigned long RED_TIME = 5000;      
+const unsigned long YELLOW_TIME = 2000;   
+const unsigned long GREEN_TIME = 5000;    
+
+
+int currentState = 0;
+
+
+void timerInterrupt() {
+  switch (currentState) {
+    case 0:
+      digitalWrite(LED_RED, HIGH);
+      digitalWrite(LED_YELLOW, LOW);
+      digitalWrite(LED_GREEN, LOW);
+      delay(RED_TIME);
+      currentState = 1;
+      break;
+    case 1:
+      digitalWrite(LED_RED, LOW);
+      digitalWrite(LED_YELLOW, HIGH);
+      digitalWrite(LED_GREEN, LOW);
+      delay(YELLOW_TIME);
+      currentState = 2;
+      break;
+    case 2:
+      digitalWrite(LED_RED, LOW);
+      digitalWrite(LED_YELLOW, LOW);
+      digitalWrite(LED_GREEN, HIGH);
+      delay(GREEN_TIME);
+      currentState = 0;
+      break;
+  }
+}
+
+int main() {
+  stdio_init_all();
+
+  gpio_init(LED_RED);
+  gpio_set_dir(LED_RED, GPIO_OUT);
+
+  gpio_init(LED_YELLOW);
+  gpio_set_dir(LED_YELLOW, GPIO_OUT);
+
+  gpio_init(LED_GREEN);
+  gpio_set_dir(LED_GREEN, GPIO_OUT);
+
+  uint32_t alarm_interval_us = 1000000; 
+  hardware_timer_t *timer = timer_add_hw_alarm(alarm, timerInterrupt, NULL);
+  timer_set_alarm(timer, alarm_interval_us, true);
+  timer_enable_alarm(timer);
+
+
+  while (1) {
+    tight_loop_contents();
+  }
+
+  return 0;
+}
+
+6)
