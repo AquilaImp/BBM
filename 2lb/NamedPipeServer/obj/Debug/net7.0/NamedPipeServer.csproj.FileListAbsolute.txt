@@ -1,0 +1,14 @@
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/bin/Debug/net7.0/NamedPipeServer
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/bin/Debug/net7.0/NamedPipeServer.deps.json
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/bin/Debug/net7.0/NamedPipeServer.runtimeconfig.json
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/bin/Debug/net7.0/NamedPipeServer.dll
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/bin/Debug/net7.0/NamedPipeServer.pdb
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/NamedPipeServer.GeneratedMSBuildEditorConfig.editorconfig
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/NamedPipeServer.AssemblyInfoInputs.cache
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/NamedPipeServer.AssemblyInfo.cs
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/NamedPipeServer.csproj.CoreCompileInputs.cache
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/NamedPipeServer.dll
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/refint/NamedPipeServer.dll
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/NamedPipeServer.pdb
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/NamedPipeServer.genruntimeconfig.cache
+/home/mukhamedyarov_ai/Рабочий стол/BBm/NamedPipeServer/obj/Debug/net7.0/ref/NamedPipeServer.dll
