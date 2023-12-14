@@ -1,73 +1,81 @@
 using System;
+using System.IO;
 using System.IO.Pipes;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 
-namespace Client
+public struct UserInfo
 {
-    class Program
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    public UserInfo(string name, int age)
     {
-        public struct Ad
-        {
-            public int X;
-            public int Y;
-            public bool DA;
-        }
+        Name = name;
+        Age = age;
+    }
+}
 
-        static async Task Main()
-        {
-            Console.WriteLine("Соединяю с сервером...\n");
+class Program
+{
+    static Queue<UserInfo> dataQueue = new Queue<UserInfo>();
+    static CancellationTokenSource cts = new CancellationTokenSource();
 
-            using (var clientPipe = new NamedPipeClientStream(".", "tonel", PipeDirection.InOut, PipeOptions.Asynchronous))
+    static async Task Main(string[] args)
+    {
+        using (NamedPipeClientStream pipeClient = new NamedPipeClientStream(".", "MyPipe", PipeDirection.InOut))
+        {
+            Console.WriteLine("Подключение к серверу...");
+            await pipeClient.ConnectAsync(cts.Token);
+
+            // Запуск асинхронного чтения из очереди и обработки данных
+            Task processQueueTask = ProcessQueueAsync();
+
+            Console.CancelKeyPress += (sender, e) =>
             {
-                await clientPipe.ConnectAsync();
+                // Обработка события Ctrl+C
+                e.Cancel = true;
+                cts.Cancel();
+                Console.WriteLine("Завершение работы...");
+            };
 
-                Console.WriteLine("Соединение установлено, отправляем данные...\n");
+            while (!cts.Token.IsCancellationRequested)
+            {
+                // Ввод данных через консоль
+                Console.Write("Введите имя: ");
+                string name = Console.ReadLine();
 
-                Ad dataToSend = new Ad
-                {
-                    X = 42,
-                    Y = 24,
-                    DA = false
-                };
+                Console.Write("Введите возраст: ");
+                int age = int.Parse(Console.ReadLine());
 
-                Console.WriteLine($"Отправлены данные: X={dataToSend.X}, Y={dataToSend.Y}, DA={dataToSend.DA}\n");
-
-                // Отправляем данные на сервер
-                byte[] buffer = new byte[Marshal.SizeOf<Ad>()];
-                MemoryMarshal.Write(buffer, ref dataToSend);
-                await clientPipe.WriteAsync(buffer, 0, buffer.Length);
-
-                // Ждем ответ от сервера
-                buffer = new byte[Marshal.SizeOf<Ad>()];
-                await clientPipe.ReadAsync(buffer, 0, buffer.Length);
-
-                Ad receivedData = MemoryMarshal.Read<Ad>(buffer);
-
-                Console.WriteLine($"Получены данные от сервера: X={receivedData.X}, Y={receivedData.Y}, DA={receivedData.DA}\n");
-
-                // Сохраняем полученные данные в файл или выводим на экран
-                Console.WriteLine("Выберите действие: \n1. Вывести на экран\n2. Сохранить в файл");
-                var choice = Console.ReadLine();
-
-                if (choice == "1")
-                {
-                    Console.WriteLine($"Полученные данные: X={receivedData.X}, Y={receivedData.Y}, DA={receivedData.DA}\n");
-                }
-                else if (choice == "2")
-                {
-                    Console.Write("Введите имя файла для сохранения: ");
-                    var fileName = Console.ReadLine();
-                    File.WriteAllText(fileName, $"Полученные данные: X={receivedData.X}, Y={receivedData.Y}, DA={receivedData.DA}\n");
-                    Console.WriteLine($"Данные сохранены в файле: {fileName}\n");
-                }
-                else
-                {
-                    Console.WriteLine("Некорректный выбор.");
-                }
+                // Создание и отправка объекта UserInfo на сервер
+                UserInfo user = new UserInfo { Name = name, Age = age };
+                string jsonUserData = JsonSerializer.Serialize(user);
+                byte[] buffer = Encoding.UTF8.GetBytes(jsonUserData);
+                await pipeClient.WriteAsync(buffer, 0, buffer.Length, cts.Token);
+                Console.WriteLine("Данные отправлены серверу.");
             }
 
-            Console.WriteLine("Клиент завершил работу.");
+            // Ожидание завершения обработки очереди перед закрытием
+            await processQueueTask;
+        }
+    }
+
+    static async Task ProcessQueueAsync()
+    {
+        while (!cts.Token.IsCancellationRequested)
+        {
+            if (dataQueue.Count > 0)
+            {
+                UserInfo user = dataQueue.Dequeue();
+                Console.WriteLine($"Получены данные от сервера: Имя: {user.Name}, Возраст: {user.Age}");
+            }
+
+            // Добавьте здесь нужные операции с полученными данными, например, запись в файл
+
+            await Task.Delay(100); // Имитация обработки данных
         }
     }
 }
