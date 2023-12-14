@@ -19,9 +19,83 @@ public struct UserInfo
     }
 }
 
+public class PriorityQueue<T>
+{
+    private List<T> data;
+    private readonly Comparison<T> comparison;
+
+    public PriorityQueue(Comparison<T> comparison)
+    {
+        this.data = new List<T>();
+        this.comparison = comparison;
+    }
+
+    public void Enqueue(T item)
+    {
+        data.Add(item);
+        int ci = data.Count - 1;
+
+        while (ci > 0)
+        {
+            int pi = (ci - 1) / 2;
+
+            if (comparison(data[ci], data[pi]) >= 0)
+                break;
+
+            Swap(ci, pi);
+            ci = pi;
+        }
+    }
+
+    public T Dequeue()
+    {
+        if (data.Count == 0)
+            throw new InvalidOperationException("Queue is empty");
+
+        T frontItem = data[0];
+        int li = data.Count - 1;
+
+        data[0] = data[li];
+        data.RemoveAt(li);
+
+        --li;
+        int pi = 0;
+
+        while (true)
+        {
+            int ci = pi * 2 + 1;
+
+            if (ci > li)
+                break;
+
+            int rc = ci + 1;
+
+            if (rc <= li && comparison(data[rc], data[ci]) < 0)
+                ci = rc;
+
+            if (comparison(data[pi], data[ci]) <= 0)
+                break;
+
+            Swap(pi, ci);
+            pi = ci;
+        }
+
+        return frontItem;
+    }
+
+    public int Count => data.Count;
+
+    private void Swap(int i, int j)
+    {
+        T temp = data[i];
+        data[i] = data[j];
+        data[j] = temp;
+    }
+}
+
 class Program
 {
-    static Queue<UserInfo> dataQueue = new Queue<UserInfo>();
+    static PriorityQueue<UserInfo> dataQueue = new PriorityQueue<UserInfo>((x, y) => x.Age.CompareTo(y.Age));
     static CancellationTokenSource cts = new CancellationTokenSource();
 
     static async Task Main(string[] args)
@@ -34,32 +108,25 @@ class Program
             // Запуск асинхронного чтения из очереди и обработки данных
             Task processQueueTask = ProcessQueueAsync();
 
-            while (true)
+            while (!cts.Token.IsCancellationRequested)
             {
-                try
-                {
-                    byte[] buffer = new byte[1024];
-                    int bytesRead = await pipeServer.ReadAsync(buffer, 0, buffer.Length, cts.Token);
+                // Ввод данных через консоль
+                Console.Write("Введите имя: ");
+                string name = Console.ReadLine();
 
-                    if (bytesRead > 0)
-                    {
-                        string jsonUserData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                        UserInfo user = JsonSerializer.Deserialize<UserInfo>(jsonUserData);
+                Console.Write("Введите возраст: ");
+                int age = int.Parse(Console.ReadLine());
 
-                        // Добавление данных в очередь с учетом приоритета
-                        dataQueue.Enqueue(user);
+                // Создание и отправка объекта UserInfo на сервер
+                UserInfo user = new UserInfo { Name = name, Age = age };
 
-                        // Отправка ответа клиенту
-                        string response = $"Данные приняты: Имя: {user.Name}, Возраст: {user.Age}";
-                        byte[] responseBuffer = Encoding.UTF8.GetBytes(response);
-                        await pipeServer.WriteAsync(responseBuffer, 0, responseBuffer.Length, cts.Token);
-                    }
-                }
-                catch (IOException)
-                {
-                    // Обработка разрыва соединения
-                    break;
-                }
+                // Добавление данных в очередь с учетом приоритета (возраст)
+                dataQueue.Enqueue(user);
+
+                // Отправка ответа клиенту
+                string response = $"Данные приняты: Имя: {user.Name}, Возраст: {user.Age}";
+                byte[] responseBuffer = Encoding.UTF8.GetBytes(response);
+                await pipeServer.WriteAsync(responseBuffer, 0, responseBuffer.Length, cts.Token);
             }
 
             // Ожидание завершения обработки очереди перед закрытием
