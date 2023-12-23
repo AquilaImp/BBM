@@ -1,0 +1,68 @@
+using System;
+using System.IO.Pipes;
+using System.Runtime.CompilerServices;
+
+public struct Structure
+{
+    public double a;
+    public double b;
+    public double result;
+}
+
+class Client
+{
+    static void Main(string[] args)
+    {
+        if (args.Length > 0)
+        {
+            using (NamedPipeClientStream client = new(".", args[0], PipeDirection.InOut))
+            {
+                client.Connect();
+                try
+                {
+                    byte[] bytes = new byte[Unsafe.SizeOf<Structure>()];
+                    client.Read(bytes, 0, bytes.Length);
+                    Structure receivedData = Unsafe.As<byte, Structure>(ref bytes[0]);
+                    Console.WriteLine($"Received data: a = {receivedData.a}, b = {receivedData.b}");
+
+                    double a = receivedData.a;
+                    double b = receivedData.b;
+                    int n = 1000000;
+
+                    receivedData.result = TrapezoidalRule(a, b, n);
+                    Console.WriteLine($"Calculated result: {receivedData.result}");
+
+                    byte[] modifiedBytes = new byte[Unsafe.SizeOf<Structure>()];
+                    Unsafe.As<byte, Structure>(ref modifiedBytes[0]) = receivedData;
+                    client.Write(modifiedBytes, 0, modifiedBytes.Length);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception: {ex.Message}");
+                }
+            }
+        }
+    }
+
+    static double Function(double x)
+    {
+        return 2 * x + x; // Ваша функция
+    }
+
+   static double TrapezoidalRule(double a, double b, int n)
+    {
+        double h = (b - a) / Convert.ToDouble(n);
+        double result = 0.5 * (Function(a) + Function(b));
+
+        for (int i = 1; i < n; i++)
+        {
+            double x = a + i * h;
+            result += Function(x);
+        }
+
+        result *= h;
+
+        return result;
+    }
+
+}
